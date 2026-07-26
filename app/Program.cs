@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace app
+namespace CSharpAssignment
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {
