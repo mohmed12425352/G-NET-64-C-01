@@ -1,246 +1,509 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
+using System.Diagnostics;
 
-namespace CSharpAssignment
+class Program
 {
-    class Program
+    static void Main()
     {
-        static void Main(string[] args)
+        Question01();
+
+        Console.WriteLine("\n==============================\n");
+
+        Question02();
+
+        Console.WriteLine("\n==============================\n");
+
+        Question03();
+
+        Console.WriteLine("\n==============================\n");
+
+        Question04();
+
+        Console.WriteLine("\n==============================\n");
+
+        Question05();
+
+        Console.WriteLine("\n==============================\n");
+
+        Question06();
+    }
+
+
+    // ==========================================
+    // Question 01
+    // ==========================================
+    static void Question01()
+    {
+        Console.WriteLine("Question 01");
+
+        // (a)
+        // Strings in C# are immutable.
+        // Every time += is used, a new string object is created
+        // in memory and the old content is copied.
+        // Repeating this many times creates temporary objects,
+        // uses more memory, and makes execution slower.
+        // StringBuilder is more efficient because it uses
+        // a mutable buffer.
+
+        // (b)
+        StringBuilder productList = new StringBuilder();
+
+        for (int i = 1; i <= 5000; i++)
         {
-            #region Question 01: StringBuilder & Stopwatch Benchmark
-            // (a) Explanation:
-            // Strings in C# are immutable. Concatenating strings using '+' inside a loop 
-            // creates a new string object in heap memory on every iteration. 
-            // This causes excessive memory allocation and heavy Garbage Collection overhead.
+            productList.Append("PROD-");
+            productList.Append(i);
+            productList.Append(",");
+        }
 
-            const int count = 5000;
+        Console.WriteLine("StringBuilder list created successfully.");
 
-            // Version 1: String Concatenation
-            Stopwatch sw1 = Stopwatch.StartNew();
-            string productList1 = "";
-            for (int i = 1; i <= count; i++)
+
+        // (c) Stopwatch comparison
+
+        Stopwatch sw = new Stopwatch();
+
+        sw.Start();
+
+        string normalString = "";
+
+        for (int i = 1; i <= 5000; i++)
+        {
+            normalString += "PROD-" + i + ",";
+        }
+
+        sw.Stop();
+
+        double stringTime = sw.Elapsed.TotalMilliseconds;
+
+
+        sw.Restart();
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 1; i <= 5000; i++)
+        {
+            builder.Append("PROD-");
+            builder.Append(i);
+            builder.Append(",");
+        }
+
+        string result = builder.ToString();
+
+        sw.Stop();
+
+        double builderTime = sw.Elapsed.TotalMilliseconds;
+
+        Console.WriteLine("Normal String Time: "
+                          + stringTime + " ms");
+
+        Console.WriteLine("StringBuilder Time: "
+                          + builderTime + " ms");
+
+        Console.WriteLine("Time Difference: "
+                          + (stringTime - builderTime) + " ms");
+
+        Console.WriteLine(
+            "StringBuilder is usually faster and uses less memory.");
+    }
+
+
+    // ==========================================
+    // Question 02
+    // Ticket Pricing System
+    // ==========================================
+    static void Question02()
+    {
+        Console.WriteLine("Question 02");
+
+        Console.Write("Enter age: ");
+        int age = int.Parse(Console.ReadLine());
+
+        Console.Write(
+            "Enter day of week (1-7, 6=Fri, 7=Sat): ");
+
+        int day = int.Parse(Console.ReadLine());
+
+        Console.Write(
+            "Do you have a valid student ID? (yes/no): ");
+
+        string student =
+            Console.ReadLine().Trim().ToLower();
+
+        double basePrice = 30;
+        double weekendSurcharge = 30;
+        double discount = 0;
+        double finalPrice;
+
+        Console.WriteLine("\n--- Price Breakdown ---");
+
+        if (age < 5)
+        {
+            finalPrice = 0;
+
+            Console.WriteLine("Age below 5: Free");
+            Console.WriteLine("Final Price: 0 LE");
+        }
+        else
+        {
+            finalPrice = basePrice;
+
+            Console.WriteLine(
+                "Base Price: " + basePrice + " LE");
+
+            if (day == 6 || day == 7)
             {
-                productList1 += i.ToString() + (i < count ? "," : "");
-            }
-            sw1.Stop();
+                finalPrice += weekendSurcharge;
 
-            // (b) Version 2: StringBuilder
-            Stopwatch sw2 = Stopwatch.StartNew();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 1; i <= count; i++)
-            {
-                sb.Append(i);
-                if (i < count) sb.Append(",");
-            }
-            string productList2 = sb.ToString();
-            sw2.Stop();
-
-            // (c) Timing Results:
-            Console.WriteLine($"String Concatenation Time: {sw1.Elapsed.TotalMilliseconds} ms");
-            Console.WriteLine($"StringBuilder Time       : {sw2.Elapsed.TotalMilliseconds} ms\n");
-            #endregion
-
-            #region Question 02: Cinema Ticket Pricing System
-            Console.Write("Enter age: ");
-            int age = int.Parse(Console.ReadLine() ?? "0");
-
-            Console.Write("Enter day of week (1-7, where 6=Fri, 7=Sat): ");
-            int day = int.Parse(Console.ReadLine() ?? "1");
-
-            Console.Write("Do you have a valid student ID? (yes/no): ");
-            bool isStudent = (Console.ReadLine() ?? "").Trim().ToLower() == "yes";
-
-            double price = 0;
-            string breakdown = "";
-
-            if (age < 5)
-            {
-                price = 0;
-                breakdown = "Age under 5: Free (0 LE)";
+                Console.WriteLine(
+                    "Weekend Surcharge: +" +
+                    weekendSurcharge + " LE");
             }
             else
             {
-                if (age <= 12)
-                {
-                    price = 30;
-                    breakdown += "Child Rate: 30 LE\n";
-                }
-                else if (age >= 60)
-                {
-                    price = 30;
-                    breakdown += "Senior Rate: 30 LE\n";
-                }
-                else
-                {
-                    price = 50;
-                    breakdown += "Standard Rate: 50 LE\n";
-                }
-
-                // Weekend Surcharge
-                if (day == 6 || day == 7)
-                {
-                    price += 10;
-                    breakdown += "Weekend Surcharge: +10 LE\n";
-                }
-
-                // Student Discount (applied after surcharge)
-                if (isStudent)
-                {
-                    double discount = price * 0.20;
-                    price -= discount;
-                    breakdown += $"Student Discount (20%): -{discount} LE\n";
-                }
+                Console.WriteLine(
+                    "Weekend Surcharge: 0 LE");
             }
 
-            Console.WriteLine("\n--- Price Breakdown ---");
-            Console.WriteLine(breakdown);
-            Console.WriteLine($"Final Ticket Price: {price} LE\n");
-            #endregion
-
-            #region Question 03: Switch Conversions
-            string userRole = "Manager";
-
-            // (a) Traditional Switch Statement
-            string access1;
-            switch (userRole)
+            if (student == "yes")
             {
-                case "Admin":
-                    access1 = "Full Control";
-                    break;
-                case "Manager":
-                    access1 = "Moderate Control";
-                    break;
-                case "Guest":
-                    access1 = "Read Only";
-                    break;
-                default:
-                    access1 = "Access Denied";
-                    break;
+                discount = finalPrice * 0.20;
+
+                finalPrice -= discount;
+
+                Console.WriteLine(
+                    "Student Discount (20%): -" +
+                    discount.ToString("F2") + " LE");
+            }
+            else
+            {
+                Console.WriteLine(
+                    "Student Discount: 0 LE");
             }
 
-            // (b) Switch Expression (C# 8+)
-            string access2 = userRole switch
+            Console.WriteLine(
+                "Final Price: " +
+                finalPrice.ToString("F2") + " LE");
+        }
+    }
+
+
+    // ==========================================
+    // Question 03
+    // ==========================================
+    static void Question03()
+    {
+        Console.WriteLine("Question 03");
+
+        string fileExtension = ".pdf";
+        string fileType;
+
+
+        // (a) Traditional switch statement
+
+        switch (fileExtension)
+        {
+            case ".pdf":
+                fileType = "PDF Document";
+                break;
+
+            case ".docx":
+            case ".doc":
+                fileType = "Word Document";
+                break;
+
+            case ".xlsx":
+            case ".xls":
+                fileType = "Excel Spreadsheet";
+                break;
+
+            case ".jpg":
+            case ".png":
+            case ".gif":
+                fileType = "Image File";
+                break;
+
+            default:
+                fileType = "Unknown File Type";
+                break;
+        }
+
+        Console.WriteLine(
+            "Traditional Switch: " + fileType);
+
+
+        // (b) Switch expression
+
+        string fileTypeExpression =
+            fileExtension switch
             {
-                "Admin" => "Full Control",
-                "Manager" => "Moderate Control",
-                "Guest" => "Read Only",
-                _ => "Access Denied"
+                ".pdf" => "PDF Document",
+
+                ".docx" or ".doc"
+                    => "Word Document",
+
+                ".xlsx" or ".xls"
+                    => "Excel Spreadsheet",
+
+                ".jpg" or ".png" or ".gif"
+                    => "Image File",
+
+                _ => "Unknown File Type"
             };
 
-            Console.WriteLine($"Access Level: {access2}\n");
-            #endregion
+        Console.WriteLine(
+            "Switch Expression: " +
+            fileTypeExpression);
+    }
 
-            #region Question 04: Ternary Operator Conversion
-            int score = 85;
 
-            // Ternary Version
-            string grade = score >= 90 ? "Excellent" : (score >= 50 ? "Pass" : "Fail");
+    // ==========================================
+    // Question 04
+    // Ternary Operator
+    // ==========================================
+    static void Question04()
+    {
+        Console.WriteLine("Question 04");
 
-            Console.WriteLine($"Grade: {grade}");
-            /*
-            Readability Answer:
-            The ternary version is NOT more readable when nested. 
-            I would use the ternary operator for short, single-line conditional assignments.
-            For complex or nested conditions, standard if-else or switch is better for readability.
-            */
-            Console.WriteLine();
-            #endregion
+        int temperature = 35;
 
-            #region Question 05: Password Validation with Do-While
-            int attempts = 0;
-            bool isValid = false;
+        string weatherAdvice =
+            temperature < 0
+                ? "Freezing! Stay indoors."
+            : temperature < 15
+                ? "Cold. Wear a jacket."
+            : temperature < 25
+                ? "Pleasant weather."
+            : temperature < 35
+                ? "Warm. Stay hydrated."
+            : "Hot! Avoid sun exposure.";
 
-            do
+        Console.WriteLine(weatherAdvice);
+
+        // Answer:
+        // The ternary version is shorter, but it is not always
+        // more readable when there are many conditions.
+        // I would use ternary operators for simple conditions
+        // and if-else statements for complex conditions.
+    }
+
+
+    // ==========================================
+    // Question 05
+    // Password Validation
+    // ==========================================
+    static void Question05()
+    {
+        Console.WriteLine("Question 05");
+
+        int attempts = 0;
+        bool valid = false;
+
+        do
+        {
+            Console.Write("Enter password: ");
+
+            string password =
+                Console.ReadLine() ?? "";
+
+            attempts++;
+
+            bool hasUppercase = false;
+            bool hasDigit = false;
+            bool hasSpace = false;
+
+            foreach (char character in password)
             {
-                attempts++;
-                Console.Write($"Attempt {attempts}/5 - Enter Password: ");
-                string password = Console.ReadLine() ?? "";
-
-                bool hasMinLength = password.Length >= 8;
-                bool hasUpper = false;
-                bool hasDigit = false;
-                bool hasSpace = false;
-
-                foreach (char c in password)
+                if (char.IsUpper(character))
                 {
-                    if (char.IsUpper(c)) hasUpper = true;
-                    if (char.IsDigit(c)) hasDigit = true;
-                    if (char.IsWhiteSpace(c)) hasSpace = true;
+                    hasUppercase = true;
                 }
 
-                isValid = hasMinLength && hasUpper && hasDigit && !hasSpace;
-
-                if (isValid)
+                if (char.IsDigit(character))
                 {
-                    Console.WriteLine("Password accepted!\n");
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine("Password violates rules:");
-                    if (!hasMinLength) Console.WriteLine(" - Must be at least 8 characters.");
-                    if (!hasUpper) Console.WriteLine(" - At least one uppercase letter required.");
-                    if (!hasDigit) Console.WriteLine(" - At least one digit required.");
-                    if (hasSpace) Console.WriteLine(" - No spaces allowed.");
-                    Console.WriteLine();
+                    hasDigit = true;
                 }
 
-            } while (attempts < 5);
-
-            if (!isValid)
-            {
-                Console.WriteLine("Account locked.\n");
-            }
-            #endregion
-
-            #region Question 06: Array Processing
-            int[] examScores = { 45, 92, 38, 88, 74, 55, 95, 62, 81, 35, 100, 49 };
-
-            // (a) Find and display all failing scores (< 50)
-            Console.Write("Failing scores (< 50): ");
-            foreach (int s in examScores)
-            {
-                if (s < 50) Console.Write(s + " ");
-            }
-            Console.WriteLine();
-
-            // (b) First score above 90 (Stop searching immediately)
-            foreach (int s in examScores)
-            {
-                if (s > 90)
+                if (char.IsWhiteSpace(character))
                 {
-                    Console.WriteLine($"First score above 90: {s}");
-                    break;
+                    hasSpace = true;
                 }
             }
 
-            // (c) Class average excluding < 40 (absent)
-            int sum = 0;
-            int validCount = 0;
-            foreach (int s in examScores)
+            valid =
+                password.Length >= 8 &&
+                hasUppercase &&
+                hasDigit &&
+                !hasSpace;
+
+            if (!valid)
             {
-                if (s >= 40)
+                Console.WriteLine(
+                    "Invalid password:");
+
+                if (password.Length < 8)
                 {
-                    sum += s;
-                    validCount++;
+                    Console.WriteLine(
+                        "- Minimum 8 characters required.");
+                }
+
+                if (!hasUppercase)
+                {
+                    Console.WriteLine(
+                        "- At least one uppercase letter required.");
+                }
+
+                if (!hasDigit)
+                {
+                    Console.WriteLine(
+                        "- At least one digit required.");
+                }
+
+                if (hasSpace)
+                {
+                    Console.WriteLine(
+                        "- Spaces are not allowed.");
+                }
+
+                if (attempts < 5)
+                {
+                    Console.WriteLine(
+                        "Attempts remaining: " +
+                        (5 - attempts));
                 }
             }
-            double average = validCount > 0 ? (double)sum / validCount : 0;
-            Console.WriteLine($"Class Average (excluding < 40): {average:F2}");
 
-            // (d) Count students in grade ranges
-            int countA = 0, countB = 0, countC = 0, countD = 0, countF = 0;
-            foreach (int s in examScores)
-            {
-                if (s >= 90) countA++;
-                else if (s >= 80) countB++;
-                else if (s >= 70) countC++;
-                else if (s >= 60) countD++;
-                else countF++;
-            }
-            Console.WriteLine($"Grade Count - A: {countA}, B: {countB}, C: {countC}, D: {countD}, F: {countF}");
-            #endregion
+        } while (!valid && attempts < 5);
+
+        if (valid)
+        {
+            Console.WriteLine(
+                "Password accepted!");
         }
+        else
+        {
+            Console.WriteLine(
+                "Account locked");
+        }
+    }
+
+
+    // ==========================================
+    // Question 06
+    // Array Processing
+    // ==========================================
+    static void Question06()
+    {
+        Console.WriteLine("Question 06");
+
+        int[] scores =
+        {
+            85, 42, 91, 67, 55, 78,
+            39, 88, 72, 95, 60, 48
+        };
+
+
+        // (a) Find failing scores below 50
+
+        Console.WriteLine(
+            "\n(a) Failing Scores:");
+
+        foreach (int score in scores)
+        {
+            if (score < 50)
+            {
+                Console.WriteLine(score);
+            }
+        }
+
+
+        // (b) Find first score above 90
+
+        Console.WriteLine(
+            "\n(b) First Score Above 90:");
+
+        foreach (int score in scores)
+        {
+            if (score > 90)
+            {
+                Console.WriteLine(score);
+
+                break;
+            }
+        }
+
+
+        // (c) Calculate class average
+        // excluding scores below 40
+
+        int sum = 0;
+        int count = 0;
+
+        foreach (int score in scores)
+        {
+            if (score >= 40)
+            {
+                sum += score;
+                count++;
+            }
+        }
+
+        double average =
+            (double)sum / count;
+
+        Console.WriteLine(
+            "\n(c) Class Average: " +
+            average.ToString("F2"));
+
+
+        // (d) Count grade ranges
+
+        int gradeA = 0;
+        int gradeB = 0;
+        int gradeC = 0;
+        int gradeD = 0;
+        int gradeF = 0;
+
+        foreach (int score in scores)
+        {
+            if (score >= 90 && score <= 100)
+            {
+                gradeA++;
+            }
+            else if (score >= 80)
+            {
+                gradeB++;
+            }
+            else if (score >= 70)
+            {
+                gradeC++;
+            }
+            else if (score >= 60)
+            {
+                gradeD++;
+            }
+            else
+            {
+                gradeF++;
+            }
+        }
+
+        Console.WriteLine(
+            "\n(d) Grade Distribution:");
+
+        Console.WriteLine(
+            "A: " + gradeA);
+
+        Console.WriteLine(
+            "B: " + gradeB);
+
+        Console.WriteLine(
+            "C: " + gradeC);
+
+        Console.WriteLine(
+            "D: " + gradeD);
+
+        Console.WriteLine(
+            "F: " + gradeF);
     }
 }
